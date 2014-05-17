@@ -17,6 +17,10 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas; 
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -38,7 +42,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 //
 @SuppressLint("WrongCall")
-public class BookActivity extends Activity {
+public class BookActivity extends Activity implements SensorEventListener{
 	/** Called when the activity is first created. */
 	public final static int OPENMARK = 0;
 	public final static int SAVEMARK = 1;
@@ -63,6 +67,7 @@ public class BookActivity extends Activity {
 	BookInfo book = null; 
 	SetupInfo setup = null;
 
+	private SensorManager mManager;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -82,7 +87,8 @@ public class BookActivity extends Activity {
 		pagefactory = new BookPageFactory(w, h); 
 		pagefactory.setBgBitmap(BitmapFactory.decodeResource(getResources(),
 				R.drawable.bg));
-		
+		//获得传感器管理器
+		mManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
 		//取得传递的参数
 		Intent intent = getIntent();
 		String bookid = intent.getStringExtra("bookid");
@@ -403,4 +409,56 @@ public class BookActivity extends Activity {
 			super.handleMessage(msg);
 		}
 	};
+	@Override
+	public void onAccuracyChanged(Sensor arg0, int arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		// TODO Auto-generated method stub
+				float[] its = event.values;
+				//Log.d(TAG,"its array:"+its+"sensor type :"+event.sensor.getType()+" proximity type:"+Sensor.TYPE_PROXIMITY);
+				if (its != null && event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
+					//经过测试，当手贴近距离感应器的时候its[0]返回值为0.0，当手离开时返回1.0
+					mPageWidget.abortAnimation();
+					mPageWidget.calcCornerXY(600, 100);
+
+					pagefactory.onDraw(mCurPageCanvas);
+					if (its[0] == 0.0) {// 贴近手机
+						try {
+							pagefactory.nextPage();
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+						if (pagefactory.islastPage()){
+							Toast.makeText(mContext, "已经是最后一页",Toast.LENGTH_SHORT).show();
+							return;
+						}
+						pagefactory.onDraw(mNextPageCanvas);
+					
+					mPageWidget.setBitmaps(mCurPageBitmap, mNextPageBitmap);
+					mPageWidget.doSensorEvent();	
+						
+					} else{
+
+							
+						}
+				} else {// 远离手机
+
+					}
+					
+				
+		
+	}
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		mManager.registerListener(this, mManager.getDefaultSensor(Sensor.TYPE_PROXIMITY),// 距离感应器
+				SensorManager.SENSOR_DELAY_FASTEST);//注册传感器，第一个参数为距离监听器，第二个是传感器类型，第三个是延迟类型
+	}
 }

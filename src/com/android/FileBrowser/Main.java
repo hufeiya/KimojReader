@@ -47,7 +47,7 @@ public class Main extends ListActivity {
 	private final int MENU_IMPORT = Menu.FIRST + 7;
 	private BaseAdapter adapter = null;
 	private String isImport = "0";
-	private String targetPath = "/sdcard/lovereader/";//程序的默认的目录
+	private String targetPath = "/sdcard/kimojreader/";//程序的默认的目录
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

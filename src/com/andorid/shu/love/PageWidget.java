@@ -134,6 +134,14 @@ public class PageWidget extends View {
 		return true;
 	}
 
+	//距离传感器翻页
+	public boolean doSensorEvent(){
+		mTouch.x = 600;
+		mTouch.y = 500;
+		this.postInvalidate();
+		startAnimation(1200);
+		return true;
+	}
 	/**
 	 * Author : hmg25 Version: 1.0 Description : 求解直线P1P2和直线P3P4的交点坐标
 	 */
