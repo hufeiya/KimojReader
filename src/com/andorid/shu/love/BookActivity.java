@@ -57,7 +57,7 @@ public class BookActivity extends Activity implements SensorEventListener{
 	private int whichSize=6;//当前的字体大小
 	private int txtProgress = 0;//当前阅读的进度
 	
-	private String bookPath = "/sdcard/lovereader/";
+	private String bookPath = "/sdcard/kimojreader/";
 	final String[] font = new String[] {"10","12","14","16","18","20","24","26","30","32","36",
 			"40","46","50","56","60","66","70"};
 	int curPostion;
